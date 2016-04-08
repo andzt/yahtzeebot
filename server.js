@@ -86,63 +86,12 @@ client.on(RTM_EVENTS.MESSAGE, function (message) {
     var prefix = '<@' + botId + '>: ';
     // Start game
     if(message.text.indexOf(prefix + 'start') > -1){
-      var commandLength = (prefix + 'start').length;
-      var params = message.text.substr(commandLength, message.text.length-commandLength).trim();
-
-      //find if there's already a game
-      GameDB.find({ channelId: message.channel }, function (err, games) {
-        if (err) throw err;
-
-        if(games.length === 0 || games[0].currentTurn === 14){ // or end game turn is 14
-          if(games.length > 0){
-            // Delete old games..
-            GameDB.find({ channelId: message.channel }).remove();
-          }
-
-          var players = params.split(" ");
-
-          if(players.length > 1 && players.length < 9){
-            GameDB.create(
-              { 
-                channelId: message.channel,  
-                numPlayers: players.length, 
-                player1: players[0],
-                player2: players.length >= 2 ? players[1] : '',
-                player3: players.length >= 3 ? players[2] : '',
-                player4: players.length >= 4 ? players[3] : '',
-                player5: players.length >= 5 ? players[4] : '',
-                player6: players.length >= 6 ? players[5] : '',
-                player7: players.length >= 7 ? players[6] : '',
-                player8: players.length >= 8 ? players[7] : '',
-                currentTurn: 0, 
-                currentPlayer: 0, 
-                currentRoll: 0 
-              }, 
-              function(err) {
-                if (err) throw err;
-                client.sendMessage('Starting game...', message.channel);
-
-                GameDB.find({ channelId: message.channel, currentTurn: 0 }, function (err, games) {
-                  if (err) throw err;
-
-                  if (games.length > 0){
-                    notifyNextPlayer(games[0]);
-                  }
-                });
-              }
-            );
-          }else{
-            client.sendMessage('Too many or too few players... must be 1 or less than 8', message.channel);
-          }
-        }else{
-          client.sendMessage('Game in progress!', message.channel);
-        }
-      });
+      var params = getParams(prefix + 'start', message.text);
+      setupNewGame(params)
     }
     // Roll logic
     else if(message.text.indexOf(prefix + 'roll') > -1 || message.text.indexOf(prefix + 'keep') > -1){
-      var commandLength = (prefix + 'roll').length;
-      var params = message.text.substr(commandLength, message.text.length-commandLength).trim();
+      var params = getParams(prefix + 'roll', message.text);
       GameDB.find({ channelId: message.channel, currentTurn: 0 }, function (err, games) {
         if (err) throw err;
 
@@ -265,9 +214,66 @@ function executeKeepTurn(game, params){
   client.sendMessage('Keeping: *' + keep.join(' ') + '*... Roll again.', message.channel);
 }
 
+function setupNewGame(params){
+  //find if there's already a game
+  GameDB.find({ channelId: message.channel }, function (err, games) {
+    if (err) throw err;
+
+    if(games.length === 0 || games[0].currentTurn === 14){ // or end game turn is 14
+      if(games.length > 0){
+        // Delete old games..
+        GameDB.find({ channelId: message.channel }).remove();
+      }
+
+      var players = params.split(" ");
+
+      if(players.length > 1 && players.length < 9){
+        GameDB.create(
+          { 
+            channelId: message.channel,  
+            numPlayers: players.length, 
+            player1: players[0],
+            player2: players.length >= 2 ? players[1] : '',
+            player3: players.length >= 3 ? players[2] : '',
+            player4: players.length >= 4 ? players[3] : '',
+            player5: players.length >= 5 ? players[4] : '',
+            player6: players.length >= 6 ? players[5] : '',
+            player7: players.length >= 7 ? players[6] : '',
+            player8: players.length >= 8 ? players[7] : '',
+            currentTurn: 0, 
+            currentPlayer: 0, 
+            currentRoll: 0 
+          }, 
+          function(err) {
+            if (err) throw err;
+            client.sendMessage('Starting game...', message.channel);
+
+            GameDB.find({ channelId: message.channel, currentTurn: 0 }, function (err, games) {
+              if (err) throw err;
+
+              if (games.length > 0){
+                notifyNextPlayer(games[0]);
+              }
+            });
+          }
+        );
+      }else{
+        client.sendMessage('Too many or too few players... must be 1 or less than 8', message.channel);
+      }
+    }else{
+      client.sendMessage('Game in progress!', message.channel);
+    }
+  });
+}
+
 ////////////////////////////////////////////////////
 // Helper Functions
 ////////////////////////////////////////////////////
+
+function getParams(command, text){
+  var commandLength = command.length;
+  return text.substr(commandLength, text.length-commandLength).trim();
+}
 
 function rollDice(count) {
   var dice = [];
