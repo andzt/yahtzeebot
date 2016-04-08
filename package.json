@@ -7,8 +7,12 @@
     "npm": ">= 1.1.x"
   },
   "license": "MIT",
-  "repository": {},
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/andzt/yahtzeebot.git"
+  },
   "dependencies": {
+    "pg": "4.x",
     "@slack/client": "^2.3.0"
   }
 }

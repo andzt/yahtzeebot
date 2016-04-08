@@ -2,8 +2,10 @@ var SlackClient = require('@slack/client').RtmClient;
 var CLIENT_EVENTS = require('@slack/client').CLIENT_EVENTS;
 var RTM_CLIENT_EVENTS = require('@slack/client').CLIENT_EVENTS.RTM;
 var RTM_EVENTS = require('@slack/client').RTM_EVENTS;
+var pg = require('pg');
 
-var client = new SlackClient('xoxb-33094093235-ZmtsXMLoBhjeRwksYiNc65Yy');//, {logLevel: 'debug'});
+var client = new SlackClient('');//, {logLevel: 'debug'});
+pg.connect(process.env.DATABASE_URL, function(err, client, done) {
 client.start();
 
 var botId;
