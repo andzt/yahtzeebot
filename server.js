@@ -3,9 +3,16 @@ var CLIENT_EVENTS = require('@slack/client').CLIENT_EVENTS;
 var RTM_CLIENT_EVENTS = require('@slack/client').CLIENT_EVENTS.RTM;
 var RTM_EVENTS = require('@slack/client').RTM_EVENTS;
 var pg = require('pg');
+var config = require('./config');
 
-var client = new SlackClient('');//, {logLevel: 'debug'});
+var token = process.env.SLACK_API || config.slack;
+var dbURL = process.env.DATABASE_URL || config.db.Url;
+var client = new SlackClient(token);
+
+
 pg.connect(process.env.DATABASE_URL, function(err, client, done) {
+});
+
 client.start();
 
 var botId;
