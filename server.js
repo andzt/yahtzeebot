@@ -126,7 +126,7 @@ client.on(RTM_EVENTS.MESSAGE, function (message) {
                   if (err) throw err;
 
                   if (games.length > 0){
-                    notifyNextPlayer(games[0], client);
+                    notifyNextPlayer(games[0]);
                   }
                 });
               }
@@ -139,169 +139,131 @@ client.on(RTM_EVENTS.MESSAGE, function (message) {
         }
       });
     }
-    // Turn Roll logic
-    else if(message.text.indexOf(prefix + 'roll') > -1){
+    // Roll logic
+    else if(message.text.indexOf(prefix + 'roll') > -1 || message.text.indexOf(prefix + 'keep') > -1){
       var commandLength = (prefix + 'roll').length;
       var params = message.text.substr(commandLength, message.text.length-commandLength).trim();
       GameDB.find({ channelId: message.channel, currentTurn: 0 }, function (err, games) {
         if (err) throw err;
 
-        if(games.length < 1)
+        if(games.length < 1){
+          client.sendMessage('Error: no game', message.channel);
           return;
+        }
 
         var userId = '<@' + message.user + '>';
-        var playerId = '';
-
-        if(games[0].currentPlayer == 1){
-          playerId = games[0].player1;
-        }else if (games[0].currentPlayer == 2){
-          playerId = games[0].player2;
-        }else if (games[0].currentPlayer == 3){
-          playerId = games[0].player3;
-        }else if (games[0].currentPlayer == 4){
-          playerId = games[0].player4;
-        }else if (games[0].currentPlayer == 5){
-          playerId = games[0].player5;
-        }else if (games[0].currentPlayer == 6){
-          playerId = games[0].player6;
-        }else if (games[0].currentPlayer == 7){
-          playerId = games[0].player7;
-        }else if (games[0].currentPlayer == 8){
-          playerId = games[0].player8;
-        }
+        var playerId = getCurrentPlayerId(games[0]);
 
         if(playerId === userId){
           // count unused dice spots
-          var count = games[0].currentRoll1 === 0 ? 1 : 0;
-          count = games[0].currentRoll2 === 0? count + 1 : count; 
-          count = games[0].currentRoll3 === 0? count + 1 : count; 
-          count = games[0].currentRoll4 === 0? count + 1 : count; 
-          count = games[0].currentRoll5 === 0? count + 1 : count; 
-
-          games[0].currentRoll = games[0].currentRoll + 1;
-
-          var dice = rollDice(count);
-          console.log(dice);
-
-          for (var i =0; i<count; i++){
-            if(5-count+i === 4){
-              games[0].currentRoll5 = dice[i];
-            }else if(5-count+i === 3){
-              games[0].currentRoll4 = dice[i];
-            }else if(5-count+i === 2){
-              games[0].currentRoll3 = dice[i];
-            }else if(5-count+i === 1){
-              games[0].currentRoll2 = dice[i];
-            }else if(5-count+i === 0){
-              games[0].currentRoll1 = dice[i];
-            }
+          if(message.text.indexOf(prefix + 'keep')) {
+            executeKeepTurn(games[0], params);
+            executeRollTurn(games[0]);
           }
-          client.sendMessage('Current hand: *' + games[0].currentRoll1 + ' '
-            + games[0].currentRoll2 + ' '
-            + games[0].currentRoll3 + ' '
-            + games[0].currentRoll4 + ' '
-            + games[0].currentRoll5
-            + '*', message.channel);
-          games[0].save();
-
-          if(games[0].currentRoll === 4){
-            notifyNextPlayer(games[0], client)
+          else {
+            executeRollTurn(games[0]);
           }
-
-        }
-      });
-    }
-    // Keep Roll logic
-    else if(message.text.indexOf(prefix + 'keep') > -1){
-      var commandLength = (prefix + 'roll').length;
-      var params = message.text.substr(commandLength, message.text.length-commandLength).trim();
-      GameDB.find({ channelId: message.channel, currentTurn: 0 }, function (err, games) {
-        if (err) throw err;
-
-        if(games.length < 1)
-          return;
-
-        var userId = '<@' + message.user + '>';
-        var playerId = '';
-
-        if(games[0].currentPlayer == 1){
-          playerId = games[0].player1;
-        }else if (games[0].currentPlayer == 2){
-          playerId = games[0].player2;
-        }else if (games[0].currentPlayer == 3){
-          playerId = games[0].player3;
-        }else if (games[0].currentPlayer == 4){
-          playerId = games[0].player4;
-        }else if (games[0].currentPlayer == 5){
-          playerId = games[0].player5;
-        }else if (games[0].currentPlayer == 6){
-          playerId = games[0].player6;
-        }else if (games[0].currentPlayer == 7){
-          playerId = games[0].player7;
-        }else if (games[0].currentPlayer == 8){
-          playerId = games[0].player8;
-        }
-
-        if(playerId === userId){
-          // count unused dice spots
-          var nums = params.split(' ').join('').split('').map(function(item) {
-            return parseInt(item, 10);
-          });
-
-          // array of current rolls
-          var rolls = [games[0].currentRoll1,games[0].currentRoll2,
-            games[0].currentRoll3,games[0].currentRoll4,games[0].currentRoll5];  
-          var keep = [];
-
-          console.log(nums);
-          console.log(rolls);
-          var count = 0;
-          while(count < nums.length){
-            if(rolls.indexOf(nums[count]) < 0){
-              client.sendMessage('Bad Keep. Try again.', message.channel);
-              return;
-            }
-            else {
-              keep.push(nums[count]);
-              rolls[rolls.indexOf(nums[count])] = 0;
-            }
-            count++;
-          }
-          keep.sort();
-          console.log(keep);
-
-          games[0].currentRoll1 = 0;
-          games[0].currentRoll2 = 0;
-          games[0].currentRoll3 = 0;
-          games[0].currentRoll4 = 0;
-          games[0].currentRoll5 = 0;
-          for (var i =0; i<keep.length; i++){
-            if(i === 4){
-              games[0].currentRoll5 = keep[i];
-            }else if(i === 3){
-              games[0].currentRoll4 = keep[i];
-            }else if(i === 2){
-              games[0].currentRoll3 = keep[i];
-            }else if(i === 1){
-              games[0].currentRoll2 = keep[i];
-            }else if(i === 0){
-              games[0].currentRoll1 = keep[i];
-            }
-          }
-          games[0].save();
-          client.sendMessage('Keeping: *' + keep.join(' ') + '*... Roll again.', message.channel);
         }
       });
     }
     // Display help
     else if(message.text.indexOf(prefix + 'help') > -1){
       // send command info
-      client.sendMessage('this is a test message', message.channel, function () {
-        // optionally, you can supply a callback to execute once the message has been sent
-      });
+      client.sendMessage('this is a test message', message.channel);
     }
   }
 });
+
+////////////////////////////////////////////////////
+// Main Functions
+////////////////////////////////////////////////////
+
+function executeRollTurn(game){
+  var count = game.currentRoll1 === 0 ? 1 : 0;
+  count = game.currentRoll2 === 0? count + 1 : count; 
+  count = game.currentRoll3 === 0? count + 1 : count; 
+  count = game.currentRoll4 === 0? count + 1 : count; 
+  count = game.currentRoll5 === 0? count + 1 : count; 
+
+  game.currentRoll = game.currentRoll + 1;
+
+  var dice = rollDice(count);
+
+  for (var i =0; i<count; i++){
+    if(5-count+i === 4){
+      game.currentRoll5 = dice[i];
+    }else if(5-count+i === 3){
+      game.currentRoll4 = dice[i];
+    }else if(5-count+i === 2){
+      game.currentRoll3 = dice[i];
+    }else if(5-count+i === 1){
+      game.currentRoll2 = dice[i];
+    }else if(5-count+i === 0){
+      game.currentRoll1 = dice[i];
+    }
+  }
+  client.sendMessage('Current hand: *' + game.currentRoll1 + ' '
+    + game.currentRoll2 + ' '
+    + game.currentRoll3 + ' '
+    + game.currentRoll4 + ' '
+    + game.currentRoll5
+    + '*', message.channel);
+  game.save();
+
+  if(game.currentRoll === 4){
+    notifyNextPlayer(game)
+  }
+}
+
+function executeKeepTurn(game, params){
+  // count unused dice spots
+  var nums = params.split(' ').join('').split('').map(function(item) {
+    return parseInt(item, 10);
+  });
+
+  // array of current rolls
+  var rolls = [game.currentRoll1,game.currentRoll2,
+    game.currentRoll3,game.currentRoll4,game.currentRoll5];  
+  var keep = [];
+
+  console.log(nums);
+  console.log(rolls);
+  var count = 0;
+  while(count < nums.length){
+    if(rolls.indexOf(nums[count]) < 0){
+      client.sendMessage('Bad Keep. Try again.', message.channel);
+      return;
+    }
+    else {
+      keep.push(nums[count]);
+      rolls[rolls.indexOf(nums[count])] = 0;
+    }
+    count++;
+  }
+  keep.sort();
+  console.log(keep);
+
+  game.currentRoll1 = 0;
+  game.currentRoll2 = 0;
+  game.currentRoll3 = 0;
+  game.currentRoll4 = 0;
+  game.currentRoll5 = 0;
+  for (var i =0; i<keep.length; i++){
+    if(i === 4){
+      game.currentRoll5 = keep[i];
+    }else if(i === 3){
+      game.currentRoll4 = keep[i];
+    }else if(i === 2){
+      game.currentRoll3 = keep[i];
+    }else if(i === 1){
+      game.currentRoll2 = keep[i];
+    }else if(i === 0){
+      game.currentRoll1 = keep[i];
+    }
+  }
+  game.save();
+  client.sendMessage('Keeping: *' + keep.join(' ') + '*... Roll again.', message.channel);
+}
 
 ////////////////////////////////////////////////////
 // Helper Functions
@@ -319,7 +281,7 @@ function getRandomIntInclusive(min, max) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
-function notifyNextPlayer(game, client){
+function notifyNextPlayer(game){
   var playerId = '';
   game.currentTurn = game.currentPlayer < game.numPlayers ? game.currentTurn : game.currentTurn + 1;
   game.currentRoll = 1;
@@ -353,6 +315,26 @@ function notifyNextPlayer(game, client){
       playerId = game.player8;
     }
     client.sendMessage(playerId + ' it\'s your turn!', game.channelId);
+  }
+}
+
+function getCurrentPlayerId(game){
+  if(game.currentPlayer == 1){
+    return game.player1;
+  }else if (game.currentPlayer == 2){
+    return game.player2;
+  }else if (game.currentPlayer == 3){
+    return game.player3;
+  }else if (game.currentPlayer == 4){
+    return game.player4;
+  }else if (game.currentPlayer == 5){
+    return game.player5;
+  }else if (game.currentPlayer == 6){
+    return game.player6;
+  }else if (game.currentPlayer == 7){
+    return game.player7;
+  }else if (game.currentPlayer == 8){
+    return game.player8;
   }
 }
 
