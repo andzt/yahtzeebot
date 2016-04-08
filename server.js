@@ -6,11 +6,11 @@ var pg = require('pg');
 var config = require('./config');
 
 var token = process.env.SLACK_API || config.slack;
-var dbURL = process.env.DATABASE_URL || config.db.Url;
+var dbURL = process.env.DATABASE_URL || config.db.url;
 var client = new SlackClient(token);
 
 
-pg.connect(process.env.DATABASE_URL, function(err, client, done) {
+pg.connect(dbURL, function(err, client, done) {
 });
 
 client.start();
@@ -24,9 +24,8 @@ var botId;
 client.on(CLIENT_EVENTS.RTM.AUTHENTICATED, function (rtmStartData) {
   if(rtmStartData["ok"] === true){
     botId = rtmStartData.self.id;
-    console.log('connected ' + botId);
+    console.log(botId);
   }
-
 });
 
 client.on(RTM_CLIENT_EVENTS.RTM_CONNECTION_OPENED, function () {
@@ -41,18 +40,31 @@ client.on(RTM_CLIENT_EVENTS.RTM_CONNECTION_OPENED, function () {
 
 client.on(RTM_EVENTS.MESSAGE, function (message) {
   // Listens to all `message` events from the team
-  console.log(message);
 
   // start game with list of users in turn order in channel
+  if(message.type === 'message' && message.text.indexOf(botId) > -1)
+  {
+    var prefix = '<@' + botId + '>: ';
 
-  // roll command with number of die - default 5 or know how many to roll
+    if(message.text.indexOf(prefix + 'start') > -1){
+      console.log('start!');
+    }
+    else if(message.text.indexOf(prefix + 'roll') > -1){
+      console.log('roll!');
+      //// 3 turns - show hand
+      //// alert next player
+    }
+    else if(message.text.indexOf(prefix + 'keep') > -1){
+      console.log('keep!');
+    }
 
-  // keep command to keep dice in hand
-
-  //// 3 turns - show hand
-  //// alert next player
-
-
+    else if(message.text.indexOf(prefix + 'help') > -1){
+      // send command info
+      client.sendMessage('this is a test message', message.channel, function messageSent() {
+        // optionally, you can supply a callback to execute once the message has been sent
+      });
+    }
+  }
 });
 
 /* GAME OBJECT
