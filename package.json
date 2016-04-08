@@ -12,6 +12,7 @@
     "url": "git://github.com/andzt/yahtzeebot.git"
   },
   "dependencies": {
+    "orm": "^2.1.30",
     "pg": "4.x",
     "@slack/client": "^2.3.0"
   }
