@@ -331,29 +331,29 @@ function notifyNextPlayer(game, client){
   game.currentRoll5 = 0;
   game.save();
 
-  if(game.currentTurn === 14){
+  if(game.currentTurn === 13){
     client.sendMessage('GAME OVER', game.channelId);
     game.remove()
+  }else {
+    if(game.currentPlayer == 1){
+      playerId = game.player1;
+    }else if (game.currentPlayer == 2){
+      playerId = game.player2;
+    }else if (game.currentPlayer == 3){
+      playerId = game.player3;
+    }else if (game.currentPlayer == 4){
+      playerId = game.player4;
+    }else if (game.currentPlayer == 5){
+      playerId = game.player5;
+    }else if (game.currentPlayer == 6){
+      playerId = game.player6;
+    }else if (game.currentPlayer == 7){
+      playerId = game.player7;
+    }else if (game.currentPlayer == 8){
+      playerId = game.player8;
+    }
+    client.sendMessage(playerId + ' it\'s your turn!', game.channelId);
   }
-
-  if(game.currentPlayer == 1){
-    playerId = game.player1;
-  }else if (game.currentPlayer == 2){
-    playerId = game.player2;
-  }else if (game.currentPlayer == 3){
-    playerId = game.player3;
-  }else if (game.currentPlayer == 4){
-    playerId = game.player4;
-  }else if (game.currentPlayer == 5){
-    playerId = game.player5;
-  }else if (game.currentPlayer == 6){
-    playerId = game.player6;
-  }else if (game.currentPlayer == 7){
-    playerId = game.player7;
-  }else if (game.currentPlayer == 8){
-    playerId = game.player8;
-  }
-  client.sendMessage(playerId + ' it\'s your turn!', game.channelId);
 }
 
 
