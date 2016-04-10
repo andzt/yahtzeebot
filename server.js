@@ -626,7 +626,7 @@ function applyScore(message, game, score, params){
     score.turnCount = score.turnCount + 1;
     score.save();
     client.sendMessage('Scoring ' + params + ', score: ' + total, message.channel);
-    notifyNextPlayer(game);
+    notifyNextPlayer(message, game);
   }
 }
 
