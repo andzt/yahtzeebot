@@ -214,8 +214,8 @@ client.on(RTM_EVENTS.MESSAGE, function (message) {
           client.sendMessage('Error: no game', message.channel);
           return;
         }else{
-          Game.find({ channelId: game.channelId }).remove();
-          Score.find({ channelId: game.channelId }).remove();
+          Game.find({ channelId: games[0].channelId }).remove();
+          Score.find({ channelId: games[0].channelId }).remove();
           client.sendMessage('Resetting', message.channel);
         }
       });
