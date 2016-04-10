@@ -206,6 +206,19 @@ client.on(RTM_EVENTS.MESSAGE, function (message) {
         displayLeaderboard(message, games[0], params);
       });
     }
+    else if(message.text.indexOf(prefix + 'reset') > -1){
+      Game.find({ channelId: message.channel }, function (err, games) {
+        if (err) throw err;
+
+        if(games.length < 1){
+          client.sendMessage('Error: no game', message.channel);
+          return;
+        }else{
+          games[0].remove();
+          client.sendMessage('Resetting', message.channel);
+        }
+      });
+    }
     // Display help
     else if(message.text.indexOf(prefix + 'help') > -1){
       // send command info
