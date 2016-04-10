@@ -214,7 +214,8 @@ client.on(RTM_EVENTS.MESSAGE, function (message) {
           client.sendMessage('Error: no game', message.channel);
           return;
         }else{
-          games[0].remove();
+          Game.find({ channelId: game.channelId }).remove();
+          Score.find({ channelId: game.channelId }).remove();
           client.sendMessage('Resetting', message.channel);
         }
       });
@@ -651,7 +652,8 @@ function setupNewGame(message, params){
     if(games.length === 0 || games[0].currentTurn === 14){ // or end game turn is 14
       if(games.length > 0){
         // Delete old games..
-        GameDB.find({ channelId: message.channel }).remove();
+        Game.find({ channelId: message.channel }).remove();
+        Score.find({ channelId: message.channel }).remove();
       }
 
       var players = params.split(" ");
@@ -764,7 +766,8 @@ function notifyNextPlayer(message, game){
   if(game.currentTurn === 13){
     displayLeaderboard(message, game);
     client.sendMessage('GAME OVER', game.channelId);
-    game.remove()
+    Game.find({ channelId: game.channelId }).remove();
+    Score.find({ channelId: game.channelId }).remove();
   }else {
     if(game.currentPlayer == 1){
       playerId = game.player1;
