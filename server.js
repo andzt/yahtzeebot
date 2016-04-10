@@ -8,7 +8,7 @@ var orm = require("orm");
 
 
 var token = process.env.SLACK_API || config.slack;
-var dbURL = process.env.OPENSHIFT_POSTGRESQL_DB_URL || config.db.url;
+var dbURL = process.env.DATABASE_URL || config.db.url;
 var client = new SlackClient(token);
 var botId;
 var Game;
