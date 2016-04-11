@@ -3,7 +3,7 @@ var CLIENT_EVENTS = require('@slack/client').CLIENT_EVENTS;
 var RTM_CLIENT_EVENTS = require('@slack/client').CLIENT_EVENTS.RTM;
 var RTM_EVENTS = require('@slack/client').RTM_EVENTS;
 var pg = require('pg');
-//var config = require('./config');
+var config = require('./config');
 var orm = require("orm");
 
 
