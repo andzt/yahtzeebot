@@ -600,7 +600,7 @@ function applyScore(message, game, score, params){
       score.chance = total;
     }
   }
-  else if(params === 'yahtzee' || params === 'Yahzee'){
+  else if(params === 'yahtzee' || params === 'Yahzee' || params === 'y!'){
     var found = false;
     if(getAllIndexes(rolls, game.currentRoll1).length > 4){
       found = true;
@@ -616,7 +616,7 @@ function applyScore(message, game, score, params){
     }
   }
   else{
-    client.sendMessage('Bad score command - try again (1s, 2s, 3s, 4s, 5s, 6s, 3ok, 4ok, dt, ss, ls, yahtzee)', message.channel);
+    client.sendMessage('Bad score command - try again (1s, 2s, 3s, 4s, 5s, 6s, 3ok, 4ok, dt, ss, ls, y!)', message.channel);
     return;
   }
   // yahtzeeBonus
