@@ -150,50 +150,6 @@ client.on(RTM_EVENTS.MESSAGE, function (message) {
       var params = getParams(prefix + 'start', message.text);
       setupNewGame(message, params)
     }
-    // Roll logic
-    else if(message.text.indexOf(prefix + 'roll') > -1 || message.text.indexOf(prefix + 'keep') > -1){
-      var params = getParams(prefix + 'roll', message.text);
-      Game.find({ channelId: message.channel }, function (err, games) {
-        if (err) throw err;
-
-        if(games.length < 1){
-          client.sendMessage('Error: no game or turn is not over. Use keep or score hand', message.channel);
-          return;
-        }
-
-        var userId = '<@' + message.user + '>';
-        var playerId = getCurrentPlayerId(games[0]);
-
-        if(playerId === userId){
-          // count unused dice spots
-          if(message.text.indexOf(prefix + 'keep') > -1) {
-            executeKeepTurn(message, games[0], params);
-            executeRollTurn(message, games[0]);
-          }
-          else {
-            executeRollTurn(message, games[0]);
-          }
-        }
-      });
-    }
-    else if(message.text.indexOf(prefix + 'score') > -1){
-      var params = getParams(prefix + 'score', message.text);
-      Game.find({ channelId: message.channel }, function (err, games) {
-        if (err) throw err;
-
-        if(games.length < 1){
-          client.sendMessage('Error: no game', message.channel);
-          return;
-        }
-
-        var userId = '<@' + message.user + '>';
-        var playerId = getCurrentPlayerId(games[0]);
-
-        if(playerId === userId){
-          executeScoreTurn(message, games[0], params);
-        }
-      });
-    }
     else if(message.text.indexOf(prefix + 'leaderboard') > -1){
       // send command info
       var params = getParams(prefix + 'leaderboard', message.text);
@@ -226,6 +182,35 @@ client.on(RTM_EVENTS.MESSAGE, function (message) {
     else if(message.text.indexOf(prefix + 'help') > -1){
       // send command info
       client.sendMessage('this is a test message', message.channel);
+    }
+    else{
+      Game.find({ channelId: message.channel }, function (err, games) {
+        if (err) throw err;
+
+        if(games.length < 1){
+          client.sendMessage('Error: no game', message.channel);
+          return;
+        }
+
+        var userId = '<@' + message.user + '>';
+        var playerId = getCurrentPlayerId(games[0]);
+
+        if(playerId === userId){
+          if(message.text.indexOf('score') > -1){
+            var params = getParams(prefix + 'score', message.text);
+            executeScoreTurn(message, games[0], params);
+          }
+          else if(message.text.indexOf('keep') > -1) {
+            var params = getParams(prefix + 'keep', message.text);
+            executeKeepTurn(message, games[0], params);
+            executeRollTurn(message, games[0]);
+          }
+          else if(message.text.indexOf('roll') > -1){
+            var params = getParams(prefix + 'roll', message.text);
+            executeRollTurn(message, games[0]);
+          }
+        }
+      });
     }
   }
 });
@@ -630,7 +615,7 @@ function applyScore(message, game, score, params){
   }
 
   // score Yahtzee Bonus
-  if(getAllIndexes(rolls, game.currentRoll1).length > 4 &&params !== 'yahtzee' && params !== 'Yahzee') {
+  if(score.yahtzee !== -1 && getAllIndexes(rolls, game.currentRoll1).length > 4 && params !== 'yahtzee' && params !== 'Yahzee') {
     score.yahtzeeBonus = score.yahtzeeBonus > 0 ? score.yahtzeeBonus + 100 : 100;
     client.sendMessage('*Upper Bonus Scored!*', message.channel);
   }
@@ -712,7 +697,7 @@ function displayLeaderboard(message, game)
         var line = scores[score].userId + ' |' + displayScore(scores[score].ones) + '|' + displayScore(scores[score].twos) + '|' + displayScore(scores[score].threes)
           + '|' + displayScore(scores[score].fours) + '|' + displayScore(scores[score].fives) + '|' + displayScore(scores[score].sixes) + '|' + displayScore(scores[score].upperBonus) + 
           ' |' + displayScore(scores[score].threeOK) + '|' + displayScore(scores[score].fourOK) + '|' + displayScore(scores[score].fullHouse) + '|' + displayScore(scores[score].smallStraight) +
-           '|' + displayScore(scores[score].largeStraight) + '|' + displayScore(scores[score].chance) + '|' + displayScore(scores[score].yahtzee) + '|' + displayScore(scores[score].turnCount) + '|' + scores[score].total() + '\n';
+           '|' + displayScore(scores[score].largeStraight) + '|' + displayScore(scores[score].chance) + '|' + displayScore(scores[score].yahtzee + scores[score].yahtzeeBonus) + '|' + displayScore(scores[score].turnCount) + '|' + scores[score].total() + '\n';
         text = text + line;
       }
       client.sendMessage(text, message.channel);
