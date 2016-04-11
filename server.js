@@ -113,6 +113,8 @@ orm.connect(dbURL, function (err, db) {
     // add the table to the database
   db.sync(function(err) { 
       if (err) throw err;
+
+      console.log('db connected');
   });
 });
 
