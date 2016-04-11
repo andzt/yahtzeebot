@@ -186,7 +186,7 @@ client.on(RTM_EVENTS.MESSAGE, function (message) {
     else{
       Game.find({ channelId: message.channel }, function (err, games) {
         if (err) throw err;
-
+        console.log('game found');
         if(games.length < 1){
           client.sendMessage('Error: no game', message.channel);
           return;
