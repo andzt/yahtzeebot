@@ -683,26 +683,45 @@ function setupNewGame(message, params){
   });
 }
 
-function displayLeaderboard(message, game)
+function displayLeaderboard(message, game, playerId)
 {
   // do single score based on params
   var text = 'Current Scoreboard:\n';
   text = text + 'player |  1  |  2  |  3  |  4  |  5  |  6  |  UB  |  3ok  |  4ok  |  dt  |  ss  |  ls  |  ??  |  y!  |  yb!  |  turn  | total\n';
-  Score.find({ channelId: game.channelId }, function (err, scores) {
-    if (err) throw err;
+  
+  if(playerId && playerId != null && playerId != 'undefined'){
+    Score.find({ channelId: game.channelId, userId: playerId }, function (err, scores) {
+      if (err) throw err;
 
-    if(scores.length > 0){
-      for(score in scores){
-        var line = scores[score].userId + ' |' + displayScore(scores[score].ones) + '|' + displayScore(scores[score].twos) + '|' + displayScore(scores[score].threes)
-          + '|' + displayScore(scores[score].fours) + '|' + displayScore(scores[score].fives) + '|' + displayScore(scores[score].sixes) + '|' + displayScore(scores[score].upperBonus) + 
-          ' |' + displayScore(scores[score].threeOK) + '|' + displayScore(scores[score].fourOK) + '|' + displayScore(scores[score].fullHouse) + '|' + displayScore(scores[score].smallStraight) +
-           '|' + displayScore(scores[score].largeStraight) + '|' + displayScore(scores[score].chance) + '|' + displayScore(scores[score].yahtzee) + '|'
-           + displayScore(scores[score].yahtzeeBonus) + '|' + displayScore(scores[score].turnCount) + '|' + scores[score].total() + '\n';
-        text = text + line;
+      if(scores.length > 0){
+        for(score in scores){
+          var line = scores[score].userId + ' |' + displayScore(scores[score].ones) + '|' + displayScore(scores[score].twos) + '|' + displayScore(scores[score].threes)
+            + '|' + displayScore(scores[score].fours) + '|' + displayScore(scores[score].fives) + '|' + displayScore(scores[score].sixes) + '|' + displayScore(scores[score].upperBonus) + 
+            ' |' + displayScore(scores[score].threeOK) + '|' + displayScore(scores[score].fourOK) + '|' + displayScore(scores[score].fullHouse) + '|' + displayScore(scores[score].smallStraight) +
+             '|' + displayScore(scores[score].largeStraight) + '|' + displayScore(scores[score].chance) + '|' + displayScore(scores[score].yahtzee) + '|'
+             + displayScore(scores[score].yahtzeeBonus) + '|' + displayScore(scores[score].turnCount) + '|' + scores[score].total() + '\n';
+          text = text + line;
+        }
+        client.sendMessage(text, message.channel);
       }
-      client.sendMessage(text, message.channel);
-    }
-  });
+    });
+  }else{
+    Score.find({ channelId: game.channelId }, function (err, scores) {
+      if (err) throw err;
+
+      if(scores.length > 0){
+        for(score in scores){
+          var line = scores[score].userId + ' |' + displayScore(scores[score].ones) + '|' + displayScore(scores[score].twos) + '|' + displayScore(scores[score].threes)
+            + '|' + displayScore(scores[score].fours) + '|' + displayScore(scores[score].fives) + '|' + displayScore(scores[score].sixes) + '|' + displayScore(scores[score].upperBonus) + 
+            ' |' + displayScore(scores[score].threeOK) + '|' + displayScore(scores[score].fourOK) + '|' + displayScore(scores[score].fullHouse) + '|' + displayScore(scores[score].smallStraight) +
+             '|' + displayScore(scores[score].largeStraight) + '|' + displayScore(scores[score].chance) + '|' + displayScore(scores[score].yahtzee) + '|'
+             + displayScore(scores[score].yahtzeeBonus) + '|' + displayScore(scores[score].turnCount) + '|' + scores[score].total() + '\n';
+          text = text + line;
+        }
+        client.sendMessage(text, message.channel);
+      }
+    });
+  }
 }
 
 ////////////////////////////////////////////////////
@@ -774,6 +793,9 @@ function notifyNextPlayer(message, game){
       playerId = game.player8;
     }
     client.sendMessage(playerId + ' it\'s your turn!', game.channelId);
+    if(game.currentPlayer == 1){
+      displayLeaderboard(message, game, playerId);
+    }
   }
 }
 
