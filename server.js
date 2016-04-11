@@ -195,16 +195,16 @@ client.on(RTM_EVENTS.MESSAGE, function (message) {
         var playerId = getCurrentPlayerId(games[0]);
 
         if(playerId === userId){
-          if(message.text.indexOf('score') > -1){
+          if(message.text.startsWith('score') === true){
             var params = getParams('score', message.text);
             executeScoreTurn(message, games[0], params);
           }
-          else if(message.text.indexOf('keep') > -1) {
+          else if(message.text.startsWith('keep') === true) {
             var params = getParams('keep', message.text);
             executeKeepTurn(message, games[0], params);
             executeRollTurn(message, games[0]);
           }
-          else if(message.text.indexOf('roll') > -1){
+          else if(message.text.startsWith('roll') === true){
             var params = getParams('roll', message.text);
             executeRollTurn(message, games[0]);
           }
