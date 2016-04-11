@@ -688,7 +688,7 @@ function displayLeaderboard(message, game)
 {
   // do single score based on params
   var text = 'Current Scoreboard:\n';
-  text = text + 'player |  1  |  2  |  3  |  4  |  5  |  6  |  UB  |  3ok  |  4ok  |  dt  |  ss  |  ls  |  ??  |  y!  |  turn  | total\n';
+  text = text + 'player |  1  |  2  |  3  |  4  |  5  |  6  |  UB  |  3ok  |  4ok  |  dt  |  ss  |  ls  |  ??  |  y!  |  yb!  |  turn  | total\n';
   Score.find({ channelId: game.channelId }, function (err, scores) {
     if (err) throw err;
 
@@ -697,7 +697,8 @@ function displayLeaderboard(message, game)
         var line = scores[score].userId + ' |' + displayScore(scores[score].ones) + '|' + displayScore(scores[score].twos) + '|' + displayScore(scores[score].threes)
           + '|' + displayScore(scores[score].fours) + '|' + displayScore(scores[score].fives) + '|' + displayScore(scores[score].sixes) + '|' + displayScore(scores[score].upperBonus) + 
           ' |' + displayScore(scores[score].threeOK) + '|' + displayScore(scores[score].fourOK) + '|' + displayScore(scores[score].fullHouse) + '|' + displayScore(scores[score].smallStraight) +
-           '|' + displayScore(scores[score].largeStraight) + '|' + displayScore(scores[score].chance) + '|' + displayScore(scores[score].yahtzee + scores[score].yahtzeeBonus) + '|' + displayScore(scores[score].turnCount) + '|' + scores[score].total() + '\n';
+           '|' + displayScore(scores[score].largeStraight) + '|' + displayScore(scores[score].chance) + '|' + displayScore(scores[score].yahtzee) + '|'
+           + displayScore(scores[score].yahtzeeBonus) + '|' + displayScore(scores[score].turnCount) + '|' + scores[score].total() + '\n';
         text = text + line;
       }
       client.sendMessage(text, message.channel);
