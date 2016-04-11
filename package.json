@@ -14,7 +14,7 @@
   "dependencies": {
     "orm": "^2.1.30",
     "pg": "4.x",
-    "slack/client": "^2.3.0"
+    "@slack/client": "^2.3.0"
   },
   "scripts": {
     "start": "node server.js"
