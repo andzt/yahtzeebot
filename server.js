@@ -142,7 +142,7 @@ client.on(RTM_EVENTS.MESSAGE, function (message) {
   // Listens to all `message` events from the team
 
   // start game with list of users in turn order in channel
-  if(message.type === 'message' && message.text.indexOf(botId) > -1)
+  if(message.type === 'message' && message.text && message.text !== 'undefined' && message.text.indexOf(botId) > -1)
   {
     var prefix = '<@' + botId + '>: ';
     // Start game
