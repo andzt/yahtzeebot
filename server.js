@@ -184,6 +184,7 @@ client.on(RTM_EVENTS.MESSAGE, function (message) {
       client.sendMessage('this is a test message', message.channel);
     }
     else{
+      var commandText = message.text.toLowerCase();
       Game.find({ channelId: message.channel }, function (err, games) {
         if (err) throw err;
         if(games.length < 1){
@@ -195,17 +196,17 @@ client.on(RTM_EVENTS.MESSAGE, function (message) {
         var playerId = getCurrentPlayerId(games[0]);
 
         if(playerId === userId){
-          if(message.text.startsWith('score') === true){
-            var params = getParams('score', message.text);
+          if(commandText.startsWith('score') === true){
+            var params = getParams('score', commandText);
             executeScoreTurn(message, games[0], params);
           }
-          else if(message.text.startsWith('keep') === true) {
-            var params = getParams('keep', message.text);
+          else if(commandText.startsWith('keep') === true) {
+            var params = getParams('keep', commandText);
             executeKeepTurn(message, games[0], params);
             executeRollTurn(message, games[0]);
           }
-          else if(message.text.startsWith('roll') === true){
-            var params = getParams('roll', message.text);
+          else if(commandText.startsWith('roll') === true){
+            var params = getParams('roll', commandText);
             executeRollTurn(message, games[0]);
           }
         }
