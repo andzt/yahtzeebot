@@ -794,7 +794,7 @@ function notifyNextPlayer(message, game){
       playerId = game.player8;
     }
     client.sendMessage(playerId + ' it\'s your turn!', game.channelId);
-    if(game.currentPlayer == 1){
+    if(game.currentRoll == 1){
       displayLeaderboard(message, game, playerId);
     }
   }
