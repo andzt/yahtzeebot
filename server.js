@@ -645,13 +645,13 @@ function setupNewGame(message, params){
     if (err) throw err;
 
     if(games.length === 0 || games[0].currentTurn === 14){ // or end game turn is 14
-      Game.find({ channelId: message.channel }).remove();
-      Score.find({ channelId: message.channel }).remove();
+      Game.find({ channelId: message.channel }).remove(function (e) {
+      });
+      Score.find({ channelId: message.channel }).remove(function (e) {
+      });
       console.log('removing old game and scores');
 
       var players = params.split(" ");
-      
-
 
       if(players.length > 0 && players.length < 9){
         var newGame = { 
