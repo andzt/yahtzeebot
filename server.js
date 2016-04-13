@@ -316,7 +316,7 @@ function executeKeepTurn(message, game, params){
       game.currentRoll1 = keep[i];
     }
   }
-  executeRollTurn(message, games[0], true);
+  executeRollTurn(message, game, true);
   game.save();
   client.sendMessage('Keeping: *' + keep.join(' ') + '*. Rolling again... ' + game.currentRoll1 + ' '
       + game.currentRoll2 + ' '
