@@ -621,8 +621,8 @@ function applyScore(message, game, score, params){
   // yahtzeeBonus
 
   // score upper Bonus
-  if(score.upperBonus === 0) {
-    score.upperBonus = score.upperTotal() >= 63 ? 35 : 0;
+  if(score.upperBonus === -1) {
+    score.upperBonus = score.upperTotal() >= 63 ? 35 : -1;
     if(score.upperBonus > 0){
       client.sendMessage('*Upper Bonus Scored!*', message.channel);
     }
