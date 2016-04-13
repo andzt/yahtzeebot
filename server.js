@@ -648,35 +648,40 @@ function setupNewGame(message, params){
       Game.find({ channelId: message.channel }).remove();
       Score.find({ channelId: message.channel }).remove();
       console.log('removing old game and scores');
-      
+
       var players = params.split(" ");
+      
+
 
       if(players.length > 0 && players.length < 9){
-        Game.create(
-          { 
-            channelId: message.channel,  
-            numPlayers: players.length, 
-            player1: players[0],
-            player2: players.length >= 2 ? players[1] : '',
-            player3: players.length >= 3 ? players[2] : '',
-            player4: players.length >= 4 ? players[3] : '',
-            player5: players.length >= 5 ? players[4] : '',
-            player6: players.length >= 6 ? players[5] : '',
-            player7: players.length >= 7 ? players[6] : '',
-            player8: players.length >= 8 ? players[7] : '',
-            currentTurn: 0, 
-            currentPlayer: 0, 
-            currentRoll: 0 
-          }, 
+        var newGame = { 
+          channelId: message.channel,  
+          numPlayers: players.length, 
+          player1: players[0],
+          player2: players.length >= 2 ? players[1] : '',
+          player3: players.length >= 3 ? players[2] : '',
+          player4: players.length >= 4 ? players[3] : '',
+          player5: players.length >= 5 ? players[4] : '',
+          player6: players.length >= 6 ? players[5] : '',
+          player7: players.length >= 7 ? players[6] : '',
+          player8: players.length >= 8 ? players[7] : '',
+          currentTurn: 0, 
+          currentPlayer: 0, 
+          currentRoll: 0 
+        };
+        console.log('new game ready');
+        Game.create(newGame
+          , 
           function(err) {
+            console.log('new game response');
             if (err) throw err;
             client.sendMessage('Starting game...', message.channel);
 
-            Game.find({ channelId: message.channel, currentTurn: 0 }, function (err, games) {
+            Game.find({ channelId: message.channel, currentTurn: 0 }, function (err, g) {
               if (err) throw err;
 
-              if (games.length > 0){
-                notifyNextPlayer(message, games[0]);
+              if (g.length > 0){
+                notifyNextPlayer(message, g[0]);
               }
             });
           }
