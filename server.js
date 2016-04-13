@@ -629,9 +629,9 @@ function applyScore(message, game, score, params){
   }
 
   // score Yahtzee Bonus
-  if(score.yahtzee !== -1 && getAllIndexes(rolls, game.currentRoll1).length > 4 && params !== 'yahtzee' && params !== 'Yahzee') {
+  if(score.yahtzee !== -1 && getAllIndexes(rolls, game.currentRoll1).length > 4 && params !== 'y!' && params !== 'yahtzee' && params !== 'Yahtzee') {
     score.yahtzeeBonus = score.yahtzeeBonus > 0 ? score.yahtzeeBonus + 100 : 100;
-    client.sendMessage('*Upper Bonus Scored!*', message.channel);
+    client.sendMessage('*Yahzee Bonus Scored!*', message.channel);
   }
 
 
