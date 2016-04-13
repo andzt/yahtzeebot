@@ -229,11 +229,17 @@ function executeRollTurn(message, game, isKeep){
     return;
   }
 
-  var count = game.currentRoll1 === 0 ? 1 : 0;
-  count = game.currentRoll2 === 0? count + 1 : count; 
-  count = game.currentRoll3 === 0? count + 1 : count; 
-  count = game.currentRoll4 === 0? count + 1 : count; 
-  count = game.currentRoll5 === 0? count + 1 : count; 
+  var count = 0;
+  if(isKeep === true){
+    var count = game.currentRoll1 === 0 ? 1 : 0;
+    count = game.currentRoll2 === 0? count + 1 : count; 
+    count = game.currentRoll3 === 0? count + 1 : count; 
+    count = game.currentRoll4 === 0? count + 1 : count; 
+    count = game.currentRoll5 === 0? count + 1 : count; 
+  }
+  else {
+    count = 5;
+  }
 
   game.currentRoll = game.currentRoll + 1;
 
@@ -649,7 +655,6 @@ function setupNewGame(message, params){
       });
       Score.find({ channelId: message.channel }).remove(function (e) {
       });
-      console.log('removing old game and scores');
 
       var players = params.split(" ");
 
@@ -669,11 +674,9 @@ function setupNewGame(message, params){
           currentPlayer: 0, 
           currentRoll: 0 
         };
-        console.log('new game ready');
         Game.create(newGame
           , 
           function(err) {
-            console.log('new game response');
             if (err) throw err;
             client.sendMessage('Starting game...', message.channel);
 
