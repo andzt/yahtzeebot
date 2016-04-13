@@ -203,7 +203,6 @@ client.on(RTM_EVENTS.MESSAGE, function (message) {
           else if(commandText.startsWith('keep') === true) {
             var params = getParams('keep', commandText);
             executeKeepTurn(message, games[0], params);
-            executeRollTurn(message, games[0]);
           }
           else if(commandText.startsWith('roll') === true){
             var params = getParams('roll', commandText);
@@ -219,7 +218,7 @@ client.on(RTM_EVENTS.MESSAGE, function (message) {
 // Main Functions
 ////////////////////////////////////////////////////
 
-function executeRollTurn(message, game){
+function executeRollTurn(message, game, isKeep){
   if(game.currentRoll === 4){
     client.sendMessage('Turn over. Score hand: *' + game.currentRoll1 + ' '
       + game.currentRoll2 + ' '
@@ -253,13 +252,16 @@ function executeRollTurn(message, game){
       game.currentRoll1 = dice[i];
     }
   }
-  client.sendMessage('Current hand: *' + game.currentRoll1 + ' '
-    + game.currentRoll2 + ' '
-    + game.currentRoll3 + ' '
-    + game.currentRoll4 + ' '
-    + game.currentRoll5
-    + '*', message.channel);
-  game.save();
+
+  if(isKeep !== true){
+    client.sendMessage('Current hand: *' + game.currentRoll1 + ' '
+      + game.currentRoll2 + ' '
+      + game.currentRoll3 + ' '
+      + game.currentRoll4 + ' '
+      + game.currentRoll5
+      + '*', message.channel);
+    game.save();
+  }
 }
 
 function executeKeepTurn(message, game, params){
@@ -314,8 +316,14 @@ function executeKeepTurn(message, game, params){
       game.currentRoll1 = keep[i];
     }
   }
+  executeRollTurn(message, games[0], true);
   game.save();
-  client.sendMessage('Keeping: *' + keep.join(' ') + '*. Rolling again...', message.channel);
+  client.sendMessage('Keeping: *' + keep.join(' ') + '*. Rolling again... ' + game.currentRoll1 + ' '
+      + game.currentRoll2 + ' '
+      + game.currentRoll3 + ' '
+      + game.currentRoll4 + ' '
+      + game.currentRoll5
+      + '*', message.channel);
 }
 
 function executeScoreTurn(message, game, params){
@@ -751,7 +759,7 @@ function rollDice(count) {
   for (var i = 0; i < Math.min(5, Math.max(1, count)); i++) {
       dice.push(getRandomIntInclusive(1, 6));
   }
-  return dice.sort();
+  return dice;
 }
 
 function getRandomIntInclusive(min, max) {
