@@ -645,12 +645,10 @@ function setupNewGame(message, params){
     if (err) throw err;
 
     if(games.length === 0 || games[0].currentTurn === 14){ // or end game turn is 14
-      if(games.length > 0){
-        // Delete old games..
-        Game.find({ channelId: message.channel }).remove();
-        Score.find({ channelId: message.channel }).remove();
-      }
-
+      Game.find({ channelId: message.channel }).remove();
+      Score.find({ channelId: message.channel }).remove();
+      console.log('removing old game and scores');
+      
       var players = params.split(" ");
 
       if(players.length > 0 && players.length < 9){
@@ -802,9 +800,7 @@ function notifyNextPlayer(message, game){
       playerId = game.player8;
     }
     client.sendMessage(playerId + ' it\'s your turn!', game.channelId);
-    if(game.currentRoll == 1){
-      displayLeaderboard(message, game, playerId);
-    }
+    displayLeaderboard(message, game, playerId);
   }
 }
 
