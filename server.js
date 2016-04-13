@@ -185,31 +185,33 @@ client.on(RTM_EVENTS.MESSAGE, function (message) {
     }
     else{
       var commandText = message.text.toLowerCase();
-      Game.find({ channelId: message.channel }, function (err, games) {
-        if (err) throw err;
-        if(games.length < 1){
-          client.sendMessage('Error: no game', message.channel);
-          return;
-        }
+      if(commandText.startsWith('score') === true || commandText.startsWith('keep') === true || commandText.startsWith('roll') === true){
+        Game.find({ channelId: message.channel }, function (err, games) {
+          if (err) throw err;
+          if(games.length < 1){
+            client.sendMessage('Error: no game', message.channel);
+            return;
+          }
 
-        var userId = '<@' + message.user + '>';
-        var playerId = getCurrentPlayerId(games[0]);
+          var userId = '<@' + message.user + '>';
+          var playerId = getCurrentPlayerId(games[0]);
 
-        if(playerId === userId){
-          if(commandText.startsWith('score') === true){
-            var params = getParams('score', commandText);
-            executeScoreTurn(message, games[0], params);
+          if(playerId === userId){
+            if(commandText.startsWith('score') === true){
+              var params = getParams('score', commandText);
+              executeScoreTurn(message, games[0], params);
+            }
+            else if(commandText.startsWith('keep') === true) {
+              var params = getParams('keep', commandText);
+              executeKeepTurn(message, games[0], params);
+            }
+            else if(commandText.startsWith('roll') === true){
+              var params = getParams('roll', commandText);
+              executeRollTurn(message, games[0]);
+            }
           }
-          else if(commandText.startsWith('keep') === true) {
-            var params = getParams('keep', commandText);
-            executeKeepTurn(message, games[0], params);
-          }
-          else if(commandText.startsWith('roll') === true){
-            var params = getParams('roll', commandText);
-            executeRollTurn(message, games[0]);
-          }
-        }
-      });
+        });
+      }
     }
   }
 });
