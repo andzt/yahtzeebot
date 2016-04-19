@@ -719,6 +719,7 @@ function displayLeaderboard(message, game, playerId)
              + displayScore(scores[score].yahtzeeBonus) + '|' + displayScore(scores[score].turnCount) + '|' + scores[score].total() + '\n';
           text = text + line;
         }
+        text = text +'```';
         client.sendMessage(text, message.channel);
       }
     });
@@ -735,6 +736,7 @@ function displayLeaderboard(message, game, playerId)
              + displayScore(scores[score].yahtzeeBonus) + '|' + displayScore(scores[score].turnCount) + '|' + scores[score].total() + '\n';
           text = text + line;
         }
+        text = text +'```';
         client.sendMessage(text, message.channel);
       }
     });
