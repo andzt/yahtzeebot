@@ -703,7 +703,7 @@ function setupNewGame(message, params){
 function displayLeaderboard(message, game, playerId)
 {
   // do single score based on params
-  var text = 'Current Scoreboard:\n';
+  var text = '```Current Scoreboard:\n';
   text = text + 'player |  1  |  2  |  3  |  4  |  5  |  6  ||  UB  ||  3ok  |  4ok  |  dt  |  ss  |  ls  |  ??  |  y!  |  yb!  |  turn  | total\n';
   
   if(playerId && playerId != null && playerId != 'undefined'){
