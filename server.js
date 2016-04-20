@@ -760,10 +760,10 @@ function displayScore(score){
 }
 
 function displayUserId(userId, length){
-  while(id.length < length){
-    id = id + ' ';
+  while(userId.length < length){
+    userId = userId + ' ';
   }
-  return id;
+  return userId;
 }
 
 function getParams(command, text){
