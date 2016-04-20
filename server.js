@@ -465,7 +465,7 @@ function applyScore(message, game, score, params){
       score.sixes = total;
     }
   }
-  else if(params === 'threeOK' || params === '3ok'){
+  else if(params === 'threeOK' || params === '3ok' || params === '3k'){
     var found = false;
     if(getAllIndexes(rolls, game.currentRoll1).length >= 3){
       found = true;
@@ -486,7 +486,7 @@ function applyScore(message, game, score, params){
       score.threeOK = total;
     }
   }
-  else if(params === 'fourOK' || params === '4ok'){
+  else if(params === 'fourOK' || params === '4ok' || params === '4k'){
     var found = false;
     if(getAllIndexes(rolls, game.currentRoll1).length >= 4){
       found = true;
@@ -617,7 +617,7 @@ function applyScore(message, game, score, params){
     }
   }
   else{
-    client.sendMessage('Bad score command - try again (1s, 2s, 3s, 4s, 5s, 6s, 3ok, 4ok, dt, ss, ls, y!)', message.channel);
+    client.sendMessage('Bad score command - try again (1s, 2s, 3s, 4s, 5s, 6s, 3k, 4k, dt, ss, ls, y!)', message.channel);
     return;
   }
   // yahtzeeBonus
@@ -704,15 +704,16 @@ function displayLeaderboard(message, game, playerId)
 {
   // do single score based on params
   var text = '```Current Scoreboard:\n';
-  text = text + 'player | 1 | 2 | 3 | 4 | 5 | 6 || UB || 3ok | 4ok | dt | ss | ls | ?? | y! | yb! | turn | total\n';
+  text = text + 'player | 1 | 2 | 3 | 4 | 5 | 6 || UB || 3k | 4k | dt | ss | ls | ?? | y! | yb | # | total\n';
   
   if(playerId && playerId != null && playerId != 'undefined'){
     Score.find({ channelId: game.channelId, userId: playerId }, function (err, scores) {
       if (err) throw err;
 
       if(scores.length > 0){
+        var maxUser = getMaxUser(scores.map(function(s){ return s.userId}))
         for(score in scores){
-          var line = scores[score].userId + ' |' + displayScore(scores[score].ones) + '|' + displayScore(scores[score].twos) + '|' + displayScore(scores[score].threes)
+          var line = displayUserId(scores[score].userId, maxUser) + ' |' + displayScore(scores[score].ones) + '|' + displayScore(scores[score].twos) + '|' + displayScore(scores[score].threes)
             + '|' + displayScore(scores[score].fours) + '|' + displayScore(scores[score].fives) + '|' + displayScore(scores[score].sixes) + '||' + displayScore(scores[score].upperBonus) + 
             ' ||' + displayScore(scores[score].threeOK) + '|' + displayScore(scores[score].fourOK) + '|' + displayScore(scores[score].fullHouse) + '|' + displayScore(scores[score].smallStraight) +
              '|' + displayScore(scores[score].largeStraight) + '|' + displayScore(scores[score].chance) + '|' + displayScore(scores[score].yahtzee) + '|'
@@ -728,8 +729,9 @@ function displayLeaderboard(message, game, playerId)
       if (err) throw err;
 
       if(scores.length > 0){
+        var maxUser = getMaxUser(scores.map(function(s){ return s.userId}))
         for(score in scores){
-          var line = scores[score].userId + ' |' + displayScore(scores[score].ones) + '|' + displayScore(scores[score].twos) + '|' + displayScore(scores[score].threes)
+          var line = displayUserId(scores[score].userId, maxUser) + ' |' + displayScore(scores[score].ones) + '|' + displayScore(scores[score].twos) + '|' + displayScore(scores[score].threes)
             + '|' + displayScore(scores[score].fours) + '|' + displayScore(scores[score].fives) + '|' + displayScore(scores[score].sixes) + '||' + displayScore(scores[score].upperBonus) + 
             ' ||' + displayScore(scores[score].threeOK) + '|' + displayScore(scores[score].fourOK) + '|' + displayScore(scores[score].fullHouse) + '|' + displayScore(scores[score].smallStraight) +
              '|' + displayScore(scores[score].largeStraight) + '|' + displayScore(scores[score].chance) + '|' + displayScore(scores[score].yahtzee) + '|'
@@ -757,6 +759,23 @@ function displayScore(score){
   if(score.length === 2)
     return ' ' + score;
   return score;
+}
+
+function displayUserId(userId, length){
+  while(id.length < maxLength){
+    id = id + ' ';
+  }
+  return id;
+}
+
+function getMaxUser(userIds){
+  var maxLength = 6;
+  for(id in userIds){
+    if(id.length > maxLength){
+      maxLength = id.length;
+    }
+  }
+  return maxLength;
 }
 
 function getParams(command, text){
