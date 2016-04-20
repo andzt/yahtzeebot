@@ -711,9 +711,8 @@ function displayLeaderboard(message, game, playerId)
       if (err) throw err;
 
       if(scores.length > 0){
-        var maxUser = getMaxUser(scores.map(function(s){ return s.userId}))
         for(score in scores){
-          var line = displayUserId(scores[score].userId, maxUser) + ' |' + displayScore(scores[score].ones) + '|' + displayScore(scores[score].twos) + '|' + displayScore(scores[score].threes)
+          var line = displayUserId(scores[score].userId, 12) + ' |' + displayScore(scores[score].ones) + '|' + displayScore(scores[score].twos) + '|' + displayScore(scores[score].threes)
             + '|' + displayScore(scores[score].fours) + '|' + displayScore(scores[score].fives) + '|' + displayScore(scores[score].sixes) + '||' + displayScore(scores[score].upperBonus) + 
             ' ||' + displayScore(scores[score].threeOK) + '|' + displayScore(scores[score].fourOK) + '|' + displayScore(scores[score].fullHouse) + '|' + displayScore(scores[score].smallStraight) +
              '|' + displayScore(scores[score].largeStraight) + '|' + displayScore(scores[score].chance) + '|' + displayScore(scores[score].yahtzee) + '|'
@@ -729,9 +728,8 @@ function displayLeaderboard(message, game, playerId)
       if (err) throw err;
 
       if(scores.length > 0){
-        var maxUser = getMaxUser(scores.map(function(s){ return s.userId}))
         for(score in scores){
-          var line = displayUserId(scores[score].userId, maxUser) + ' |' + displayScore(scores[score].ones) + '|' + displayScore(scores[score].twos) + '|' + displayScore(scores[score].threes)
+          var line = displayUserId(scores[score].userId, 12) + ' |' + displayScore(scores[score].ones) + '|' + displayScore(scores[score].twos) + '|' + displayScore(scores[score].threes)
             + '|' + displayScore(scores[score].fours) + '|' + displayScore(scores[score].fives) + '|' + displayScore(scores[score].sixes) + '||' + displayScore(scores[score].upperBonus) + 
             ' ||' + displayScore(scores[score].threeOK) + '|' + displayScore(scores[score].fourOK) + '|' + displayScore(scores[score].fullHouse) + '|' + displayScore(scores[score].smallStraight) +
              '|' + displayScore(scores[score].largeStraight) + '|' + displayScore(scores[score].chance) + '|' + displayScore(scores[score].yahtzee) + '|'
@@ -762,20 +760,10 @@ function displayScore(score){
 }
 
 function displayUserId(userId, length){
-  while(id.length < maxLength){
+  while(id.length < length){
     id = id + ' ';
   }
   return id;
-}
-
-function getMaxUser(userIds){
-  var maxLength = 6;
-  for(id in userIds){
-    if(id.length > maxLength){
-      maxLength = id.length;
-    }
-  }
-  return maxLength;
 }
 
 function getParams(command, text){
