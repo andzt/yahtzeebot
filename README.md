@@ -1,13 +1,14 @@
 ## YahtzeeBot
 
-YahtzeeBot is a slack bot that will facilitate a game of Yahtzee from within your Slack channel.
+YahtzeeBot is a slack bot that will facilitate a game of Yahtzee from within your Slack channel. The games are channel specific, so you can even run multiple games per Slack channel.
 
-## Setup
-
+## Setup Bot
+Setup YahtzeeBot following the Slack integration instructions.
 
 
 ## Heroku Setup
-
+Easy to setup on Heroku. Create a new instance with a PostGres DB and push. Set the following environment variable:
+process.env.SLACK_API = 'SLACK API TOKEN'
 
 
 ## Commands
@@ -15,7 +16,8 @@ YahtzeeBot is a slack bot that will facilitate a game of Yahtzee from within you
 YahtzeeBot works with Slack by waiting for commands. YahtzeeBot understands the following commands:
 
 ### Start a new game:
->@<botname>: start @<player1>
+>@(botname): start @(player1) @(player2) @(player3)
+Allows up to 8 players at a time
 
 ### Roll (if it's your turn)
 >roll
@@ -32,9 +34,9 @@ Valid column names: 1s, 2s, 3s, 4s, 5s, 6s, 3k, 4k, dt (full house), ss (small s
 Note: To score a Yahtzee Bonus, score for columns 1-6, 3k, or 4k
 
 ### Leaderboard
->@<bot_name>: leaderboard
+>@(bot_name): leaderboard
 
 ### Reset
->@<bot_name>: reset
+>@(bot_name): reset
 
 
