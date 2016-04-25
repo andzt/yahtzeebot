@@ -30,6 +30,11 @@ No other command needed
 
 where # is the value of the dice rolled that you would like to keep
 
+For example:
+>keep 555
+
+Will keep the three dice that rolled the value 5. YahtzeeBot will notify you of a bad keep or score command, so don't try to fool it.
+
 ### Score a hand
 >score (column_name)
 
