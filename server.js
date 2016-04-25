@@ -704,7 +704,7 @@ function displayLeaderboard(message, game, playerId)
 {
   // do single score based on params
   var text = '```Current Scoreboard:\n';
-  text = text + 'player | 1 | 2 | 3 | 4 | 5 | 6 || UB || 3k | 4k | dt | ss | ls | ?? | y! | yb | # | total\n';
+  text = text + displayUserId('player') + ' | 1 | 2 | 3 | 4 | 5 | 6 || UB || 3k | 4k | dt | ss | ls | ?? | y! | yb | # | total\n';
   
   if(playerId && playerId != null && playerId != 'undefined'){
     Score.find({ channelId: game.channelId, userId: playerId }, function (err, scores) {
