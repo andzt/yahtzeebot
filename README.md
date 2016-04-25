@@ -17,18 +17,22 @@ YahtzeeBot works with Slack by waiting for commands. YahtzeeBot understands the 
 
 ### Start a new game:
 >@(botname): start @(player1) @(player2) @(player3)
+
 Allows up to 8 players at a time
 
 ### Roll (if it's your turn)
 >roll
+
 No other command needed
 
 ### Keep dice and Re-roll
 >keep ###
+
 where # is the value of the dice rolled that you would like to keep
 
 ### Score a hand
->score <column_name>
+>score (column_name)
+
 Valid column names: 1s, 2s, 3s, 4s, 5s, 6s, 3k, 4k, dt (full house), ss (small straight), ls (large straight), y! (yahtzee)
 
 Note: To score a Yahtzee Bonus, score for columns 1-6, 3k, or 4k
