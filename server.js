@@ -796,8 +796,8 @@ function notifyNextPlayer(message, game){
   game.save();
 
   if(game.currentTurn === 13){
-    displayLeaderboard(message, game);
     client.sendMessage('GAME OVER', game.channelId);
+    displayShortLeaderboard(message, game);
     Game.find({ channelId: game.channelId }).remove();
     Score.find({ channelId: game.channelId }).remove();
   }else {
@@ -849,6 +849,29 @@ function getAllIndexes(arr, val) {
       indexes.push(i);
   }
   return indexes;
+}
+
+function displayShortLeaderboard(message, game)
+{
+  // do single score based on params
+  var text = '```Final Scores:\n';
+  
+  Score.find({ channelId: game.channelId }, function (err, scores) {
+    if (err) throw err;
+
+    scores.sort(function(a, b){
+      return a.total() > b.total();
+    });
+
+    if(scores.length > 0){
+      for(score in scores){
+        var line = displayUserId(scores[score].userId, 12) + ': ' + scores[score].total() + '\n';
+        text = text + line;
+      }
+      text = text +'```';
+      client.sendMessage(text, message.channel);
+    }
+  });
 }
 
 
