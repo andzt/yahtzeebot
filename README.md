@@ -7,7 +7,7 @@ Setup YahtzeeBot following the Slack integration instructions.
 
 
 ## Heroku Setup
-Easy to setup on Heroku. Create a new instance with a PostGres DB and push. Set the following environment variable:
+Easy to setup on Heroku. Create a new instance with a PostgreSQL and push. Set the following environment variable:
 process.env.SLACK_API = 'SLACK API TOKEN'
 
 
