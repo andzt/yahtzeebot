@@ -1,15 +1,25 @@
 var SlackClient = require('@slack/client').RtmClient;
+var MemoryDataStore = require('@slack/client').MemoryDataStore;
 var CLIENT_EVENTS = require('@slack/client').CLIENT_EVENTS;
 var RTM_CLIENT_EVENTS = require('@slack/client').CLIENT_EVENTS.RTM;
 var RTM_EVENTS = require('@slack/client').RTM_EVENTS;
 var pg = require('pg');
-//var config = require('./config');
+var config = require('./config');
 var orm = require("orm");
 
 
 var token = process.env.SLACK_API || config.slack;
 var dbURL = process.env.DATABASE_URL || config.db.url;
-var client = new SlackClient(token);
+var client = new SlackClient(token, {
+  // Sets the level of logging we require
+  logLevel: 'error',
+  // Initialise a data store for our client, this will load additional helper functions for the storing and retrieval of data
+  dataStore: new MemoryDataStore(),
+  // Boolean indicating whether Slack should automatically reconnect after an error response
+  autoReconnect: true,
+  // Boolean indicating whether each message should be marked as read or not after it is processed
+  autoMark: true
+});
 var botId;
 var Game;
 var Score;
@@ -56,6 +66,7 @@ orm.connect(dbURL, function (err, db) {
       id        : { type: 'serial', key: true },
       channelId  : String,
       userId: String,
+      userDisplay: String,
       ones   : Number,
       twos   : Number,
       threes   : Number,
@@ -140,7 +151,6 @@ client.on(RTM_CLIENT_EVENTS.RTM_CONNECTION_OPENED, function () {
 
 client.on(RTM_EVENTS.MESSAGE, function (message) {
   // Listens to all `message` events from the team
-
   // start game with list of users in turn order in channel
   if(message.type === 'message' && message.text && message.text !== 'undefined')
   {
@@ -341,10 +351,12 @@ function executeScoreTurn(message, game, params){
     if (err) throw err;
 
     if(scores.length === 0){
+      var user = client.dataStore.getUserById(message.user);
       Score.create(
         {
           channelId  : game.channelId,
           userId: playerId,
+          userDisplay: user.name,
           ones   : -1,
           twos   : -1,
           threes : -1,
@@ -370,6 +382,11 @@ function executeScoreTurn(message, game, params){
             if (err) throw err;
 
             if (scores.length > 0){
+              if(score.userDisplay == null || score.userDisplay == '')
+              {
+                var user = client.dataStore.getUserById(message.user);
+                score.userDisplay = user.name;
+              }
               applyScore(message, game, scores[0], params);
             }
           });
@@ -387,7 +404,7 @@ function applyScore(message, game, score, params){
       game.currentRoll3,game.currentRoll4,game.currentRoll5],
     total = 0;
 
-  if(params === 'ones' || params === '1s'){
+  if(params === 'ones' || params === '1s' || params === '1'){
     total = game.currentRoll1 === 1 ? total + 1 : total;
     total = game.currentRoll2 === 1 ? total + 1 : total;
     total = game.currentRoll3 === 1 ? total + 1 : total;
@@ -400,7 +417,7 @@ function applyScore(message, game, score, params){
       score.ones = total;
     }
   }
-  else if(params === 'twos' || params === '2s'){
+  else if(params === 'twos' || params === '2s' || params === '2'){
     total = game.currentRoll1 === 2 ? total + 2 : total;
     total = game.currentRoll2 === 2 ? total + 2 : total;
     total = game.currentRoll3 === 2 ? total + 2 : total;
@@ -413,7 +430,7 @@ function applyScore(message, game, score, params){
       score.twos = total;
     }
   }
-  else if(params === 'threes' || params === '3s'){
+  else if(params === 'threes' || params === '3s' || params === '3'){
     total = game.currentRoll1 === 3 ? total + 3 : total;
     total = game.currentRoll2 === 3 ? total + 3 : total;
     total = game.currentRoll3 === 3 ? total + 3 : total;
@@ -426,7 +443,7 @@ function applyScore(message, game, score, params){
       score.threes = total;
     }
   }
-  else if(params === 'fours' || params === '4s'){
+  else if(params === 'fours' || params === '4s' || params === '4'){
     total = game.currentRoll1 === 4 ? total + 4 : total;
     total = game.currentRoll2 === 4 ? total + 4 : total;
     total = game.currentRoll3 === 4 ? total + 4 : total;
@@ -439,7 +456,7 @@ function applyScore(message, game, score, params){
       score.fours = total;
     }
   }
-  else if(params === 'fives' || params === '5s'){
+  else if(params === 'fives' || params === '5s' || params === '5'){
     total = game.currentRoll1 === 5 ? total + 5 : total;
     total = game.currentRoll2 === 5 ? total + 5 : total;
     total = game.currentRoll3 === 5 ? total + 5 : total;
@@ -452,7 +469,7 @@ function applyScore(message, game, score, params){
       score.fives = total;
     }
   }
-  else if(params === 'sixes' || params === '6s'){
+  else if(params === 'sixes' || params === '6s' || params === '6'){
     total = game.currentRoll1 === 6 ? total + 6 : total;
     total = game.currentRoll2 === 6 ? total + 6 : total;
     total = game.currentRoll3 === 6 ? total + 6 : total;
@@ -504,7 +521,7 @@ function applyScore(message, game, score, params){
       score.fourOK = total;
     }
   }
-  else if(params === 'fullHouse' || params === 'DT' || params === 'dt'){
+  else if(params === 'fullHouse' || params === 'DT' || params === 'dt' || params === 'fh'){
     var foundDouble = false,
       foundTriple = false;
     if(getAllIndexes(rolls, game.currentRoll1).length === 3){
@@ -617,7 +634,7 @@ function applyScore(message, game, score, params){
     }
   }
   else{
-    client.sendMessage('Bad score command - try again (1s, 2s, 3s, 4s, 5s, 6s, 3k, 4k, dt, ss, ls, y!)', message.channel);
+    client.sendMessage('Bad score command - try again (1, 2, 3, 4, 5, 6, 3k, 4k, dt, ss, ls, y!)', message.channel);
     return;
   }
   // yahtzeeBonus
@@ -704,7 +721,7 @@ function displayLeaderboard(message, game, playerId)
 {
   // do single score based on params
   var text = '```Current Scoreboard:\n';
-  text = text + displayUserId('player') + ' | 1 | 2 | 3 | 4 | 5 | 6 || UB || 3k | 4k | dt | ss | ls | ?? | y! | yb | # | total\n';
+  text = text + displayUser('player') + ' 1  2  3  4  5  6  3k  4k  dt  ss  ls  ??  y!  ub  yb  #  tot\n';
   
   if(playerId && playerId != null && playerId != 'undefined'){
     Score.find({ channelId: game.channelId, userId: playerId }, function (err, scores) {
@@ -712,11 +729,11 @@ function displayLeaderboard(message, game, playerId)
 
       if(scores.length > 0){
         for(score in scores){
-          var line = displayUserId(scores[score].userId, 12) + ' |' + displayScore(scores[score].ones) + '|' + displayScore(scores[score].twos) + '|' + displayScore(scores[score].threes)
-            + '|' + displayScore(scores[score].fours) + '|' + displayScore(scores[score].fives) + '|' + displayScore(scores[score].sixes) + '||' + displayScore(scores[score].upperBonus) + 
-            ' ||' + displayScore(scores[score].threeOK) + '|' + displayScore(scores[score].fourOK) + '|' + displayScore(scores[score].fullHouse) + '|' + displayScore(scores[score].smallStraight) +
-             '|' + displayScore(scores[score].largeStraight) + '|' + displayScore(scores[score].chance) + '|' + displayScore(scores[score].yahtzee) + '|'
-             + displayScore(scores[score].yahtzeeBonus) + '|' + displayScore(scores[score].turnCount) + '|' + scores[score].total() + '\n';
+          var line = displayUser(scores[score].userDisplay, 10) + displayScore(scores[score].ones) + displayScore(scores[score].twos) + displayScore(scores[score].threes)
+             + displayScore(scores[score].fours) + displayScore(scores[score].fives) + displayScore(scores[score].sixes) 
+             + displayScore(scores[score].threeOK) + displayScore(scores[score].fourOK) + displayScore(scores[score].fullHouse) + displayScore(scores[score].smallStraight)
+             + displayScore(scores[score].largeStraight) + displayScore(scores[score].chance) + displayScore(scores[score].yahtzee) + displayScore(scores[score].upperBonus)
+             + displayScore(scores[score].yahtzeeBonus) + displayScore(scores[score].turnCount) + displayScore(scores[score].total()) + '\n';
           text = text + line;
         }
         text = text +'```';
@@ -729,11 +746,11 @@ function displayLeaderboard(message, game, playerId)
 
       if(scores.length > 0){
         for(score in scores){
-          var line = displayUserId(scores[score].userId, 12) + ' |' + displayScore(scores[score].ones) + '|' + displayScore(scores[score].twos) + '|' + displayScore(scores[score].threes)
-            + '|' + displayScore(scores[score].fours) + '|' + displayScore(scores[score].fives) + '|' + displayScore(scores[score].sixes) + '||' + displayScore(scores[score].upperBonus) + 
-            ' ||' + displayScore(scores[score].threeOK) + '|' + displayScore(scores[score].fourOK) + '|' + displayScore(scores[score].fullHouse) + '|' + displayScore(scores[score].smallStraight) +
-             '|' + displayScore(scores[score].largeStraight) + '|' + displayScore(scores[score].chance) + '|' + displayScore(scores[score].yahtzee) + '|'
-             + displayScore(scores[score].yahtzeeBonus) + '|' + displayScore(scores[score].turnCount) + '|' + scores[score].total() + '\n';
+          var line = displayUser(scores[score].userDisplay, 10) + displayScore(scores[score].ones) + displayScore(scores[score].twos) + displayScore(scores[score].threes)
+             + displayScore(scores[score].fours) + displayScore(scores[score].fives) + displayScore(scores[score].sixes) +
+             + displayScore(scores[score].threeOK) + displayScore(scores[score].fourOK) + displayScore(scores[score].fullHouse) + displayScore(scores[score].smallStraight) +
+             + displayScore(scores[score].largeStraight)  + displayScore(scores[score].chance)  + displayScore(scores[score].yahtzee) + displayScore(scores[score].upperBonus)
+             + displayScore(scores[score].yahtzeeBonus) + displayScore(scores[score].turnCount) + '|' + displayScore(scores[score].total()) + '\n';
           text = text + line;
         }
         text = text +'```';
@@ -759,11 +776,11 @@ function displayScore(score){
   return score;
 }
 
-function displayUserId(userId, length){
-  while(userId.length < length){
-    userId = userId + ' ';
+function displayUser(userName, length){
+  while(userName.length < length){
+    userName = userName + ' ';
   }
-  return userId;
+  return userName;
 }
 
 function getParams(command, text){
