@@ -721,7 +721,7 @@ function displayLeaderboard(message, game, playerId)
 {
   // do single score based on params
   var text = '```Current Scoreboard:\n';
-  text = text + displayUser('player', 10) + ' 1  2  3  4  5  6  3k 4k dt ss ls ?? y! ub yb  # tot\n';
+  text = text + displayUser('player', 10) + ' 1  2  3  4  5  6  3k 4k dt ss ls ?? y! ub  yb # tot\n';
   
   if(playerId && playerId != null && playerId != 'undefined'){
     Score.find({ channelId: game.channelId, userId: playerId }, function (err, scores) {
@@ -733,7 +733,7 @@ function displayLeaderboard(message, game, playerId)
              + displayScore(scores[score].fours) + displayScore(scores[score].fives) + displayScore(scores[score].sixes) 
              + displayScore(scores[score].threeOK) + displayScore(scores[score].fourOK) + displayScore(scores[score].fullHouse) + displayScore(scores[score].smallStraight)
              + displayScore(scores[score].largeStraight) + displayScore(scores[score].chance) + displayScore(scores[score].yahtzee) + displayScore(scores[score].upperBonus)
-             + displayScore(scores[score].yahtzeeBonus) + displayScore(scores[score].turnCount) + displayScore(scores[score].total()) + '\n';
+             + ' ' + displayScore(scores[score].yahtzeeBonus) + displayScore(scores[score].turnCount) + displayScore(scores[score].total()) + '\n';
           text = text + line;
         }
         text = text +'```';
@@ -750,7 +750,7 @@ function displayLeaderboard(message, game, playerId)
              + displayScore(scores[score].fours) + displayScore(scores[score].fives) + displayScore(scores[score].sixes)
              + displayScore(scores[score].threeOK) + displayScore(scores[score].fourOK) + displayScore(scores[score].fullHouse) + displayScore(scores[score].smallStraight)
              + displayScore(scores[score].largeStraight)  + displayScore(scores[score].chance)  + displayScore(scores[score].yahtzee) + displayScore(scores[score].upperBonus)
-             + displayScore(scores[score].yahtzeeBonus) + displayScore(scores[score].turnCount) + displayScore(scores[score].total()) + '\n';
+             + ' ' + displayScore(scores[score].yahtzeeBonus) + displayScore(scores[score].turnCount) + displayScore(scores[score].total()) + '\n';
           text = text + line;
         }
         text = text +'```';
