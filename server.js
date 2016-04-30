@@ -877,12 +877,12 @@ function displayShortLeaderboard(message, game)
     if (err) throw err;
 
     scores.sort(function(a, b){
-      return a.total() > b.total();
+      return a.total() < b.total();
     });
 
     if(scores.length > 0){
       for(score in scores){
-        var line = displayUserId(scores[score].userId, 12) + ': ' + scores[score].total() + '\n';
+        var line = displayUserId(scores[score].userDisplay, 10) + ': ' + scores[score].total() + '\n';
         text = text + line;
       }
       text = text +'```';
