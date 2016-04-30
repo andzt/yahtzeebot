@@ -721,7 +721,7 @@ function displayLeaderboard(message, game, playerId)
 {
   // do single score based on params
   var text = '```Current Scoreboard:\n';
-  text = text + displayUser('player') + ' 1  2  3  4  5  6  3k 4k dt ss ls ?? y! ub yb  # tot\n';
+  text = text + displayUser('player', 10) + ' 1  2  3  4  5  6  3k 4k dt ss ls ?? y! ub yb  # tot\n';
   
   if(playerId && playerId != null && playerId != 'undefined'){
     Score.find({ channelId: game.channelId, userId: playerId }, function (err, scores) {
