@@ -382,10 +382,10 @@ function executeScoreTurn(message, game, params){
             if (err) throw err;
 
             if (scores.length > 0){
-              if(score.userDisplay == null || score.userDisplay == '')
+              if(scores[0].userDisplay == null || scores[0].userDisplay == '')
               {
                 var user = client.dataStore.getUserById(message.user);
-                score.userDisplay = user.name;
+                scores[0].userDisplay = user.name;
               }
               applyScore(message, game, scores[0], params);
             }
