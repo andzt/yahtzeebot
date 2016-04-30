@@ -747,8 +747,8 @@ function displayLeaderboard(message, game, playerId)
       if(scores.length > 0){
         for(score in scores){
           var line = displayUser(scores[score].userDisplay, 10) + displayScore(scores[score].ones) + displayScore(scores[score].twos) + displayScore(scores[score].threes)
-             + displayScore(scores[score].fours) + displayScore(scores[score].fives) + displayScore(scores[score].sixes) +
-             + displayScore(scores[score].threeOK) + displayScore(scores[score].fourOK) + displayScore(scores[score].fullHouse) + displayScore(scores[score].smallStraight) +
+             + displayScore(scores[score].fours) + displayScore(scores[score].fives) + displayScore(scores[score].sixes)
+             + displayScore(scores[score].threeOK) + displayScore(scores[score].fourOK) + displayScore(scores[score].fullHouse) + displayScore(scores[score].smallStraight)
              + displayScore(scores[score].largeStraight)  + displayScore(scores[score].chance)  + displayScore(scores[score].yahtzee) + displayScore(scores[score].upperBonus)
              + displayScore(scores[score].yahtzeeBonus) + displayScore(scores[score].turnCount) + displayScore(scores[score].total()) + '\n';
           text = text + line;
