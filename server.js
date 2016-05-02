@@ -721,7 +721,7 @@ function displayLeaderboard(message, game, playerId)
 {
   // do single score based on params
   var text = '```Current Scoreboard:\n';
-  text = text + displayUser('player', 10) + ' 1  2  3  4  5  6  3k 4k dt ss ls ?? y! ub  yb #  tot\n';
+  text = text + displayUser('player', 8) + ' 1  2  3  4  5  6  3k 4k dt ss ls ?? y! ub  yb #  tot\n';
   
   if(playerId && playerId != null && playerId != 'undefined'){
     Score.find({ channelId: game.channelId, userId: playerId }, function (err, scores) {
@@ -729,7 +729,7 @@ function displayLeaderboard(message, game, playerId)
 
       if(scores.length > 0){
         for(score in scores){
-          var line = displayUser(scores[score].userDisplay, 10) + displayScore(scores[score].ones) + displayScore(scores[score].twos) + displayScore(scores[score].threes)
+          var line = displayUser(scores[score].userDisplay, 8) + displayScore(scores[score].ones) + displayScore(scores[score].twos) + displayScore(scores[score].threes)
              + displayScore(scores[score].fours) + displayScore(scores[score].fives) + displayScore(scores[score].sixes) 
              + displayScore(scores[score].threeOK) + displayScore(scores[score].fourOK) + displayScore(scores[score].fullHouse) + displayScore(scores[score].smallStraight)
              + displayScore(scores[score].largeStraight) + displayScore(scores[score].chance) + displayScore(scores[score].yahtzee) + displayScore(scores[score].upperBonus)
@@ -746,7 +746,7 @@ function displayLeaderboard(message, game, playerId)
 
       if(scores.length > 0){
         for(score in scores){
-          var line = displayUser(scores[score].userDisplay, 10) + displayScore(scores[score].ones) + displayScore(scores[score].twos) + displayScore(scores[score].threes)
+          var line = displayUser(scores[score].userDisplay, 8) + displayScore(scores[score].ones) + displayScore(scores[score].twos) + displayScore(scores[score].threes)
              + displayScore(scores[score].fours) + displayScore(scores[score].fives) + displayScore(scores[score].sixes)
              + displayScore(scores[score].threeOK) + displayScore(scores[score].fourOK) + displayScore(scores[score].fullHouse) + displayScore(scores[score].smallStraight)
              + displayScore(scores[score].largeStraight)  + displayScore(scores[score].chance)  + displayScore(scores[score].yahtzee) + displayScore(scores[score].upperBonus)
