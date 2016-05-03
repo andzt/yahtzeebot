@@ -721,7 +721,7 @@ function displayLeaderboard(message, game, playerId)
 {
   // do single score based on params
   var text = '```Current Scoreboard:\n';
-  text = text + displayUser('player', 8) + ' 1  2  3  4  5  6  3k 4k dt ss ls ?? y! ub  yb #  tot\n';
+  text = text + displayUser('player') + ' 1  2  3  4  5  6  3k 4k dt ss ls ?? y! ub  yb #  tot\n';
   
   if(playerId && playerId != null && playerId != 'undefined'){
     Score.find({ channelId: game.channelId, userId: playerId }, function (err, scores) {
@@ -729,7 +729,7 @@ function displayLeaderboard(message, game, playerId)
 
       if(scores.length > 0){
         for(score in scores){
-          var line = displayUser(scores[score].userDisplay, 8) + displayScore(scores[score].ones) + displayScore(scores[score].twos) + displayScore(scores[score].threes)
+          var line = displayUser(scores[score].userDisplay) + displayScore(scores[score].ones) + displayScore(scores[score].twos) + displayScore(scores[score].threes)
              + displayScore(scores[score].fours) + displayScore(scores[score].fives) + displayScore(scores[score].sixes) 
              + displayScore(scores[score].threeOK) + displayScore(scores[score].fourOK) + displayScore(scores[score].fullHouse) + displayScore(scores[score].smallStraight)
              + displayScore(scores[score].largeStraight) + displayScore(scores[score].chance) + displayScore(scores[score].yahtzee) + displayScore(scores[score].upperBonus)
@@ -746,7 +746,7 @@ function displayLeaderboard(message, game, playerId)
 
       if(scores.length > 0){
         for(score in scores){
-          var line = displayUser(scores[score].userDisplay, 8) + displayScore(scores[score].ones) + displayScore(scores[score].twos) + displayScore(scores[score].threes)
+          var line = displayUser(scores[score].userDisplay) + displayScore(scores[score].ones) + displayScore(scores[score].twos) + displayScore(scores[score].threes)
              + displayScore(scores[score].fours) + displayScore(scores[score].fives) + displayScore(scores[score].sixes)
              + displayScore(scores[score].threeOK) + displayScore(scores[score].fourOK) + displayScore(scores[score].fullHouse) + displayScore(scores[score].smallStraight)
              + displayScore(scores[score].largeStraight)  + displayScore(scores[score].chance)  + displayScore(scores[score].yahtzee) + displayScore(scores[score].upperBonus)
@@ -776,8 +776,8 @@ function displayScore(score){
   return score;
 }
 
-function displayUser(userName, length){
-  while(userName.length < length){
+function displayUser(userName){
+  while(userName.length < 8){
     userName = userName + ' ';
   }
   return userName;
@@ -882,7 +882,7 @@ function displayShortLeaderboard(message, game)
 
     if(scores.length > 0){
       for(score in scores){
-        var line = displayUserId(scores[score].userDisplay, 10) + ': ' + scores[score].total() + '\n';
+        var line = displayUser(scores[score].userDisplay) + ': ' + scores[score].total() + '\n';
         text = text + line;
       }
       text = text +'```';
